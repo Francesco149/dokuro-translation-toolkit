@@ -1,0 +1,58 @@
+# Nightly build of the translation tool (native/ editor, Win32 PE).
+#
+# Runs on the public branch, which ships NO game binaries — so the host/ASan
+# suites run in their synthetic-only mode (T6/T7/T12; real-script tests need
+# game-files/SCRIPT.UNI, which lives only on the local archive branch — see
+# docs/BUILD_AND_TEST.md). The gate is: tests pass + the exe cross-builds;
+# the artifact is build/dokuro-editor.exe (14-day retention).
+#
+# Dev-environment parity: the flake pins Dear ImGui 1.91.4 (pkgs.imgui) and
+# an i686 mingw cross-gcc; CI mirrors that with apt mingw-w64 and the
+# v1.91.4 tag, exported as IMGUI_DIR (the Makefile fails loudly without it).
+
+name: nightly
+
+on:
+  schedule:
+    - cron: "17 3 * * *" # 03:17 UTC
+  workflow_dispatch: {}  # manual trigger from the Actions tab
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install i686 mingw cross toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-mingw-w64-i686 g++-mingw-w64-i686
+
+      - name: Fetch Dear ImGui v1.91.4 (pinned — matches flake pkgs.imgui)
+        run: |
+          curl -fsSL -o imgui.tar.gz https://github.com/ocornut/imgui/archive/refs/tags/v1.91.4.tar.gz
+          tar xzf imgui.tar.gz
+          echo "IMGUI_DIR=$GITHUB_WORKSPACE/imgui-1.91.4" >> "$GITHUB_ENV"
+
+      - name: Host tests (synthetic suite — no game files on the public branch)
+        run: |
+          make -C native tests
+          (cd native && ../build/run_tests)
+
+      - name: ASan/UBSan tests (synthetic suite)
+        run: |
+          make -C native asan
+          (cd native && ../build/run_tests_asan)
+
+      - name: Cross-build Windows editor (32-bit PE, static)
+        run: make -C native all
+
+      - name: Upload nightly exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: dokuro-editor-nightly
+          path: build/dokuro-editor.exe
+          retention-days: 14

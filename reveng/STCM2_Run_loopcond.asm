@@ -1,0 +1,30 @@
+
+00168d00 <+0x68d00>:
+  168d00:	962302cc 	lhu	v1,716(s1)
+  168d04:	24630001 	addiu	v1,v1,1
+  168d08:	a62302cc 	sh	v1,716(s1)
+  168d0c:	962302cc 	lhu	v1,716(s1)
+  168d10:	3404fff0 	dli	a0,0xfff0
+  168d14:	0064182a 	slt	v1,v1,a0
+  168d18:	14600003 	bne	v1,zero,0x168d28
+  168d1c:	00000000 	sll	zero,zero,0x0
+  168d20:	a62402cc 	sh	a0,716(s1)
+  168d24:	00000000 	sll	zero,zero,0x0
+  168d28:	8f848624 	lw	a0,-31196(gp)
+  168d2c:	8e230004 	lw	v1,4(s1)
+  168d30:	10830003 	beq	a0,v1,0x168d40
+  168d34:	00000000 	sll	zero,zero,0x0
+  168d38:	a62002cc 	sh	zero,716(s1)
+  168d3c:	a62002ce 	sh	zero,718(s1)
+  168d40:	8f838604 	lw	v1,-31228(gp)
+  168d44:	1460f524 	bne	v1,zero,0x1661d8
+  168d48:	00000000 	sll	zero,zero,0x0
+  168d4c:	dfbf0040 	ld	ra,64(sp)
+  168d50:	7bb30030 	lq	s3,48(sp)
+  168d54:	7bb20020 	lq	s2,32(sp)
+  168d58:	7bb10010 	lq	s1,16(sp)
+  168d5c:	7bb00000 	lq	s0,0(sp)
+  168d60:	27bd0050 	addiu	sp,sp,80
+  168d64:	03e00008 	jr	ra
+  168d68:	00000000 	sll	zero,zero,0x0
+  168d6c:	00000000 	sll	zero,zero,0x0

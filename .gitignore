@@ -1,0 +1,39 @@
+# Windows artifacts
+*:Zone.Identifier
+Thumbs.db
+Desktop.ini
+
+# dotnet
+**/bin/
+**/obj/
+*.user
+
+# build output
+dist/
+out/
+
+# native editor build artifacts
+native/obj/
+build/
+native/selftest_tmp/
+native/selftest.log
+dokuro_imgui.ini
+native/app/dokuro_editor.ini
+
+# emulator / game dumps (large, regenerable)
+*.iso
+*.bin
+*.cue
+*.dump
+*.dmp
+
+# game binaries — NEVER commit these to the public branch (the local archive
+# branch keeps them; the public repo ships no game content, only the .sym
+# debug info). tests/test_main.cpp degrades to the synthetic suite without
+# SCRIPT.UNI, so CI stays green.
+game-files/SCRIPT.UNI
+game-files/SLPM_661.85
+docs/investigations/2026-08-crashing-script-sample/SCRIPT.UNI.crashing
+
+# misc
+.DS_Store
