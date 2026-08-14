@@ -15,6 +15,9 @@ history and `game-files/` (SCRIPT.UNI + ELF), which are gitignored on `public`. 
 are **potentially out of date** - kept specifically so free reverse-engineering efforts
 can run in the Claude.ai website sandbox (plain .NET/Python, no nix toolchain).
 
+**License:** MIT (see `LICENSE`). Note the game files are NOT part of this repo's code -
+the game content itself is the copyright of its owners.
+
 - `docs/` - orientation + format spec + RE findings + build/test how-to + next-session brief
   (one unified front; no session logs).
 - `tools/` - standalone Python scripts (container split/join/inspect). No dependencies beyond
