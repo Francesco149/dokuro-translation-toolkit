@@ -56,3 +56,4 @@ jobs:
           name: dokuro-editor-nightly
           path: build/dokuro-editor.exe
           retention-days: 14
+
