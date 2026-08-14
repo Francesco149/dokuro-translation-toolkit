@@ -11,14 +11,20 @@ history and `game-files/` (SCRIPT.UNI + ELF), which are gitignored on `public`. 
 (GitHub Actions) builds `build/dokuro-editor.exe` from `public` - see
 `docs/BUILD_AND_TEST.md`.
 
+**Status:** `native/` (C++) is the authoritative implementation. `dotnet/` and `reveng/`
+are **potentially out of date** - kept specifically so free reverse-engineering efforts
+can run in the Claude.ai website sandbox (plain .NET/Python, no nix toolchain).
+
 - `docs/` - orientation + format spec + RE findings + build/test how-to + next-session brief
   (one unified front; no session logs).
 - `tools/` - standalone Python scripts (container split/join/inspect). No dependencies beyond
   stdlib. Useful for quick CLI probing independent of the .NET tool.
-- `dotnet/DokuroScript.Core/` - the tested reference engine (STCM2 binary parse/rebuild, UNI2
-  container split/join, Shift-JIS text handling, project model, text-dump import/export).
-- `dotnet/TestHarness/` - `dotnet run -- path/to/SCRIPT.UNI` to regression-test Core against a
-  real script file. Run this after any Core change.
+- `dotnet/DokuroScript.Core/` - **POTENTIALLY OUT OF DATE** .NET engine (STCM2 binary
+  parse/rebuild, UNI2 container split/join, Shift-JIS text handling, project model, text-dump
+  import/export). Sandbox-oriented; the native `core/` is authoritative.
+- `dotnet/TestHarness/` - **POTENTIALLY OUT OF DATE** `dotnet run -- path/to/SCRIPT.UNI`
+  regression harness for Core. Same sandbox purpose; the native host test suite is
+  authoritative.
 - `native/` - **the current translator tool**: Dear ImGui + DX11 dialogue editor (Win7
   compatible, i686 PE) with project folders (original/working copies, optional ISO patching),
   drag-reorder with original-vs-custom tracking, revert/add/delete, per-slot size-budget

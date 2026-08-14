@@ -64,15 +64,19 @@ branch ships no game binaries, so the real-script tests cannot run there —
 run the full suite locally from the archive branch (which keeps
 `game-files/`): `cd native && ../build/run_tests`.
 
-## Reference only: the superseded dotnet toolchain
+## Reference only: the sandbox dotnet toolchain (POTENTIALLY OUT OF DATE)
 
-`dotnet/DokuroScript.Core` is the byte-level reference implementation of the
-format (the native `core/` is a port of it; `tools/gen_cp932` regenerates
-`cp932_tables.h` from .NET's cp932). `dotnet/TestHarness` exercises Core
+`dotnet/DokuroScript.Core` is a .NET port of the format handling and is
+**potentially out of date** — the native `core/` (C++) is the authoritative
+implementation. The dotnet tree (Core + TestHarness) is kept specifically so
+free reverse-engineering experiments can run in the Claude.ai website
+sandbox (plain .NET, no nix toolchain). `tools/gen_cp932` still regenerates
+`cp932_tables.h` from .NET's cp932. `dotnet/TestHarness` exercises Core
 against the real `SCRIPT.UNI` (`dotnet run` from `dotnet/TestHarness/` with
-`DOTNET_ROLL_FORWARD=LatestMajor` if only a newer SDK is installed). The
-superseded WinForms GUI was removed from the tree (recoverable from git
-history). If NuGet access is blocked, an empty
+`DOTNET_ROLL_FORWARD=LatestMajor` if only a newer SDK is installed); the
+authoritative format check is the native host test suite. The superseded
+WinForms GUI was removed from the tree (recoverable from git history). If
+NuGet access is blocked, an empty
 `<packageSources><clear/></packageSources>` `NuGet.config` next to each
 `.csproj` lets plain net8.0 projects restore from the local framework packs.
 

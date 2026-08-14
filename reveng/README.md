@@ -1,5 +1,11 @@
 # SLPM_661.85 reverse engineering toolkit
 
+**STATUS: POTENTIALLY OUT OF DATE.** These plain-Python scripts exist so free
+reverse-engineering efforts can run in the Claude.ai website sandbox (no nix
+toolchain needed). Findings from them are folded into
+`FONT_AND_CRASH_INVESTIGATION.md` — trust the docs, not this code, for the
+current RE state.
+
 Companion tooling for reading the game's MIPS executable (`SLPM_661.85`). See
 `docs/ORIENTATION.md` section 6 for the full writeup — this README is just "how to run it".
 

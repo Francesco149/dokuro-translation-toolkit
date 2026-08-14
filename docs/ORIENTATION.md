@@ -43,6 +43,13 @@ modes (window hidden off-screen; nothing appears on the user's desktop):
 
 ## 1. Where things stand (as of this writing)
 
+- **Authoritative front = the native C++ code.** `native/` (editor + `core/`
+  + host test suite) is the current, authoritative implementation of the
+  format handling and tooling. The .NET and Python trees (`dotnet/`,
+  `reveng/`) are **POTENTIALLY OUT OF DATE** — they are kept specifically so
+  free reverse-engineering efforts can run in the Claude.ai website sandbox
+  (plain .NET/Python, no nix toolchain needed). Trust `native/` and
+  `FORMAT.md` for current behavior, not the ported code.
 - ✅ **Live debugging stack (new since 2026-08-14).** The emulator is now
   fully agent-drivable from WSL: `tools/ps2dbg.py` speaks the DebugServer
   protocol (breakpoints, registers, memory, disasm, stepping, watchpoints)
@@ -54,8 +61,9 @@ modes (window hidden off-screen; nothing appears on the user's desktop):
   main menu → `circle` (L) on the first option → first dialogue line.
   See `tools/pcsx2ctl.sh` (launcher), `win/padkeys.ps1` (SendInput
   fallback, focus-stealing — unreliable against SDL, prefer `set_pad`).
-- ✅ **Script format fully reverse engineered.** A tested C# library
-  (`dotnet/DokuroScript.Core/`) parses and rebuilds `SCRIPT.UNI` losslessly. Verified: all 35
+- ✅ **Script format fully reverse engineered.** The native C++ engine
+  (`native/core/`) parses and rebuilds `SCRIPT.UNI` losslessly (a C# port
+  lives in `dotnet/`, potentially out of date). Verified: all 35
   embedded script chunks round-trip byte-for-byte unmodified, and a stress test editing **every
   one of the 36,672 translatable string chunks** with real Cyrillic text rebuilds and re-parses
   cleanly. Full byte-level spec: `FORMAT.md`. This is solid ground to build on.
@@ -72,8 +80,9 @@ modes (window hidden off-screen; nothing appears on the user's desktop):
   per §0, headless verification is the default). The only items not covered by
   headless tests are drag-reorder and the Update ISO click (need a human mouse
   / an unlocked Windows session). The superseded WinForms GUI was removed from
-  the tree (recoverable from git history); the C# Core library remains the
-  reference implementation of the format semantics.
+  the tree (recoverable from git history); the native `core/` is the
+  authoritative implementation of the format semantics (the C# port is
+  potentially out of date).
 - ✅ **Font system: dialogue-specific scale patch CONFIRMED working.** Three independent hardcoded
   `1.0f` scale constants found and isolated; the dialogue-body one (`0xb8794`, inside
   `AD_AdvMainWinOpen`'s call to `AD_WinTxtStateSet`) was tested in-emulator and confirmed correct
@@ -147,12 +156,12 @@ the project, not a history of findings.
 | `tools/surgical_iso_move.py` | Fallback for a grown SCRIPT.UNI without a rebuild: relocates it into the trailing free space of the ISO and patches its ISO9660 directory record (both endians). The game resolves SCRIPT.UNI's LBA from the directory at boot, so the move works. | Growing SCRIPT.UNI past its original size without rebuilding the disc. |
 | `tools/uni2_split.py`, `tools/uni2_join.py` | Split/rejoin `SCRIPT.UNI` (the UNI2 flavor). Reference implementation / quick CLI use. **Not present in this checkout** (dropped from the last compiled zip) — trivial to recreate from `FORMAT.md` §1a if needed, or see `docs/investigations/2026-08-addr-remap-check/verify_addrs.py` for a working from-scratch Python split implementation. |
 | `tools/list_uni_tags.py` | Lists named sub-resources in a TOC-flavor UNI2 file (`SYSTEM.UNI`, `CHARA.UNI`, etc.) Also not present in this checkout — see note above. |
-| `dotnet/DokuroScript.Core/` | The real, tested engine. `Stcm2.cs` (binary parse/rebuild), `Uni2.cs` (container split/join), `Stcm2Text.cs` (SJIS codec), `Stcm2Project.cs` (whole-script model + opcode filtering + overflow heuristic), `TextDump.cs` (plain-text export/import for manual editing). |
-| `dotnet/TestHarness/` | net8.0 console app that exercises Core against a real `SCRIPT.UNI`. Run this after ANY change to Core before trusting it again — see `BUILD_AND_TEST.md`. |
+| `dotnet/DokuroScript.Core/` | **POTENTIALLY OUT OF DATE** — .NET engine: `Stcm2.cs` (binary parse/rebuild), `Uni2.cs` (container split/join), `Stcm2Text.cs` (SJIS codec), `Stcm2Project.cs` (project model), `TextDump.cs` (plain-text export/import). Kept so RE experiments run free in the Claude.ai website sandbox; the native `core/` is authoritative. |
+| `dotnet/TestHarness/` | **POTENTIALLY OUT OF DATE** — net8.0 console app exercising Core against a real `SCRIPT.UNI`. Same sandbox purpose; the native host test suite (`native/tests/`) is authoritative. |
 | `native/` | **The current translator tool**: Dear ImGui + DX11 editor (Win7-compatible i686 PE), engine core (`core/`), direct-script editor, undo log, ISO patching, host test suite, `--selftest`. Build/test/sign via `nix develop --command make -C native [tests|sign|selftest]`. |
-| `tools/gen_cp932/` | Generates `native/core/cp932_tables.h` from .NET's cp932 (the C# Core is the byte-level reference). Regenerate after touching Stcm2Text encoding behavior. |
+| `tools/gen_cp932/` | Generates `native/core/cp932_tables.h` from .NET's cp932 codec (the cp932 byte mapping is a fixed standard — this is about the encoding tables, not the game-format code). Regenerate after touching encoding behavior. |
 | `stcm2-asm/` (upstream, in `stcm2-asm-master.zip`) | Third-party Rust disassembler/assembler for the same STCM2 format. Confirmed working against this game's script. NOT used by our tool (see `FORMAT.md` for why we reimplemented instead of shelling out to it), but useful as an independent cross-check / for manual `.asm`-text-level hacking if ever needed. **Building it requires a modern Rust (edition 2024 + let-chains, ~1.88+); binaries built with modern Rust will NOT run on Windows 7** (Rust dropped Win7 support at 1.75/1.76). So it's a dev-machine-only tool (WSL2/Win11), never shipped to the Win7 translator. |
-| `reveng/` | MIPS/DWARF1 reverse-engineering scripts for `SLPM_661.85` itself (the game executable, not the script format) — recovers a real function symbol table and enables real EE disassembly. See `FONT_AND_CRASH_INVESTIGATION.md` and `reveng/README.md`. Dev-machine-only, nothing here ships to the translator. |
+| `reveng/` | **POTENTIALLY OUT OF DATE** — MIPS/DWARF1 reverse-engineering scripts for `SLPM_661.85` itself (the game executable, not the script format): recovers a real function symbol table and enables real EE disassembly. Sandbox-oriented (plain Python, runs in the Claude.ai website sandbox); findings are folded into `FONT_AND_CRASH_INVESTIGATION.md`. See `reveng/README.md`. |
 | `docs/investigations/` | Dated, self-contained investigation artifacts (scripts + README) that don't belong in the main tooling but are worth keeping runnable. See §2 above. |
 
 ## 4. Open TODOs, roughly in priority order
