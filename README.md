@@ -1,3 +1,5 @@
+https://github.com/user-attachments/assets/d123f1ba-35d7-4f35-b970-4945d48cc9de
+
 # Dokuro-chan Fan Translation Toolkit
 
 **Start with `docs/ORIENTATION.md`** - the unified front: project state, file formats, what's
