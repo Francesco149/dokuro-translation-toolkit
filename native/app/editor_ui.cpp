@@ -1,5 +1,5 @@
 // Friendly dialogue editor tab: per-file event/line table with drag handles,
-// filters, and a detail panel (JP read-only + RU editable, revert/delete/add).
+// filters, and a detail panel (JP read-only + TL editable, revert/delete/add).
 #include "app.h"
 #include "core/cp932.h"
 #include "core/text.h"
@@ -106,7 +106,7 @@ struct DragRow
     int action;
 };
 
-// Detail-panel RU edit buffer (persists across frames; reloaded on selection
+// Detail-panel TL edit buffer (persists across frames; reloaded on selection
 // or model change). File-scope so the uitest can assert its content.
 char g_ruBuf[8192];
 int g_editFile = -1, g_editAction = -1, g_editChunk = -1;
@@ -117,7 +117,7 @@ uint64_t g_editVersion = 0;
 // current row index (Enter = next line).
 std::vector<Row> g_rows;
 
-// RU field rect recorded during rendering (last frame it was visible) so the
+// TL field rect recorded during rendering (last frame it was visible) so the
 // headless uitest can click it at the exact client coordinates.
 int g_ruFieldX = -1, g_ruFieldY = -1;
 uint64_t g_rows_version = ~0ull;
@@ -329,7 +329,7 @@ void ui_editor_tab(App& a)
         ImGui::TableSetupColumn("kind", ImGuiTableColumnFlags_WidthFixed, 90);
         ImGui::TableSetupColumn("addr", ImGuiTableColumnFlags_WidthFixed, 70);
         ImGui::TableSetupColumn("JP", ImGuiTableColumnFlags_WidthStretch, 340);
-        ImGui::TableSetupColumn("RU", ImGuiTableColumnFlags_WidthStretch, 340);
+        ImGui::TableSetupColumn("TL", ImGuiTableColumnFlags_WidthStretch, 340);
         ImGui::TableSetupColumn("status", ImGuiTableColumnFlags_WidthFixed, 110);
         ImGui::TableHeadersRow();
 
@@ -397,7 +397,7 @@ void ui_editor_tab(App& a)
                 ImGui::TableSetColumnIndex(2);
                 ImGui::TextDisabled("0x%X", act.original_addr);
 
-                // JP + RU text
+                // JP + TL text
                 if (row.is_text)
                 {
                     const auto& ch = act.chunks[row.chunk];
