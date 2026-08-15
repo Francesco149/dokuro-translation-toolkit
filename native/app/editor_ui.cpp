@@ -501,8 +501,8 @@ void ui_editor_tab(App& a)
                                       ImGuiInputTextFlags_ReadOnly);
             ImGui::PopStyleColor();
 
-            // RU (editable, commit on focus loss)
-            ImGui::TextUnformatted("Russian (translation):");
+            // editable, commit on focus loss
+            ImGui::TextUnformatted("Translation:");
             if (g_editFile != a.sel_file || g_editAction != a.sel_action || g_editChunk != ci)
             {
                 // selection changed: reload from the model (any pending edit for
